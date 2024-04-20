@@ -19,7 +19,7 @@ class BloomFilter:
         """Generate a hash for the given item using a seed."""
         hash_value = 0
         for char in item:
-            hash_value = hash_value * 31 + ord(char)
+            hash_value = (hash_value * 31 + ord(char)) % self.size
         return (hash_value + seed) % self.size
 
     def add(self, item):
