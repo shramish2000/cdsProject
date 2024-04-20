@@ -16,11 +16,14 @@ class BloomFilter:
         self.seed = seeds if seeds is not None else random.sample(range(1, 100), hash_count)  # Unique seeds for each hash function
 
     def _hash(self, item, seed):
-        """Generate a hash for the given item using a seed."""
+        """Generate a hash for the given item using a seed"""
         hash_value = 0
-        for char in item:
-            hash_value = (hash_value * 31 + ord(char)) % self.size
-        return (hash_value + seed) % self.size
+        for i, char in enumerate(item):
+            if i % 2 == 0:
+                hash_value = (hash_value * seed + ord(char)) % self.size
+            else:
+                hash_value = (hash_value ^ (ord(char) << seed % 10)) % self.size
+        return hash_value
 
     def add(self, item):
         for seed in self.seed:
