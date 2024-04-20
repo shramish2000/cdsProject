@@ -1,10 +1,13 @@
 # bloom_filter.py
+from bitarray import bitarray
 import random
 
 class BloomFilter:
     def __init__(self, size, hash_count):
         self.size = size
         self.hash_count = hash_count
+        self.bit_array = bitarray(size)
+        self.bit_array.setall(0)
         self.seed = random.sample(range(1, 100), hash_count)  # Unique seeds for each hash function
 
     def _hash(self, item, seed):
@@ -13,3 +16,15 @@ class BloomFilter:
         for char in item:
             hash_value = hash_value * 31 + ord(char)
         return (hash_value + seed) % self.size
+
+    def add(self, item):
+        for seed in self.seed:
+            digest = self._hash(item, seed)
+            self.bit_array[digest] = True
+
+    def check(self, item):
+        for seed in self.seed:
+            digest = self._hash(item, seed)
+            if not self.bit_array[digest]:
+                return False
+        return True
