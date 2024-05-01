@@ -23,6 +23,11 @@ class TestBloomFilter(unittest.TestCase):
         self.assertFalse(self.bf.check(item), "Item should not be present initially.")
         self.bf.add(item)
         self.assertTrue(self.bf.check(item), "Item should be present after being added.")
+
+    def test_false_positive(self):
+        """ Test for false positives with random strings and DNA sequences. """
+        self.bf.add("item1")
+        self.assertFalse(self.bf.check("item2"), "False positive occurred.")
         
     def test_random_strings(self):
         """ Test Bloom filter with 100 random strings. """
