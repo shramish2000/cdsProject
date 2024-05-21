@@ -1,5 +1,6 @@
 # benchmark.py
 import time
+import matplotlib.pyplot as plt
 from bloom_filter import BloomFilter
 from data_generation import generate_natural_words, generate_random_string, generate_numeric_data, generate_dna_sequence, generate_list_data
 
@@ -52,6 +53,49 @@ def benchmark_bloom_filter(data_generator, num_samples, sizes, test_interval=100
 
     return sizes, insert_times, check_times, all_false_positive_rates, compression_rates, memory_usages
 
+def plot_results(sizes, insert_times, check_times, all_false_positive_rates, compression_rates, memory_usages, title):
+    plt.figure(figsize=(15, 10))
+
+    # Insert vs. Check Times
+    plt.subplot(2, 2, 1)
+    plt.plot(sizes, insert_times, label='Insert Times')
+    plt.plot(sizes, check_times, label='Check Times')
+    plt.xlabel('Number of Elements')
+    plt.ylabel('Time (seconds)')
+    plt.title(f'{title} - Insert vs. Check Times')
+    plt.legend()
+    plt.grid(True)
+
+    # False Positive Rates by Intervals
+    plt.subplot(2, 2, 2)
+    for idx, fp_rates in enumerate(all_false_positive_rates):
+        plt.plot(range(100, len(fp_rates) * 100 + 100, 100), fp_rates, label=f'Size {sizes[idx]}')
+    plt.xlabel('Number of Items Inserted')
+    plt.ylabel('False Positive Rate')
+    plt.title(f'{title} - False Positive Rates by Insertions')
+    plt.legend()
+    plt.grid(True)
+
+    # Compression Rates
+    plt.subplot(2, 2, 3)
+    plt.plot(sizes, compression_rates, label='Compression Rate')
+    plt.xlabel('Number of Elements')
+    plt.ylabel('Compression Ratio')
+    plt.title(f'{title} - Compression Rates')
+    plt.legend()
+    plt.grid(True)
+
+    # Memory Usage
+    plt.subplot(2, 2, 4)
+    plt.plot(sizes, memory_usages, label='Memory Usage')
+    plt.xlabel('Number of Elements')
+    plt.ylabel('Memory (Bytes)')
+    plt.title(f'{title} - Memory Usage')
+    plt.legend()
+    plt.grid(True)
+
+    plt.tight_layout()
+    plt.show()
 
 
 if __name__ == "__main__":
@@ -63,5 +107,11 @@ if __name__ == "__main__":
         'Natural Words': lambda count: generate_natural_words(count),
         'List Data': lambda count: generate_list_data(count)
     }
+
+    for data_type, generator in data_generators.items():
+        print(f"Analyzing {data_type}:")
+        sizes, insert_times, check_times, fp_rates, compression_rates, memory_usages = benchmark_bloom_filter(generator, 10000, sizes)
+        plot_results(sizes, insert_times, check_times, fp_rates, compression_rates, memory_usages, f"{data_type} Performance Metrics")
+
 
 
