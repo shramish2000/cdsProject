@@ -1,38 +1,53 @@
-# bloom_filter.py
 from bitarray import bitarray
-import random
 
 class BloomFilter:
-    def __init__(self, size, hash_count, seeds=None):
-        if size <= 0:
-            raise ValueError("Size must be a positive integer")
-        if hash_count <= 0:
-            raise ValueError("Hash count must be a positive integer")
-    
+    def __init__(self, size, expected_elements):
         self.size = size
-        self.hash_count = hash_count
+        self.expected_elements = expected_elements
+        self.hash_count = 4  
         self.bit_array = bitarray(size)
         self.bit_array.setall(0)
-        self.seed = seeds if seeds is not None else random.sample(range(1, 100), hash_count)  # Unique seeds for each hash function
+
+    def _hash1(self, item):
+        hash_value = 5381
+        for char in str(item):
+            hash_value = (hash_value * 33) ^ ord(char)
+        return hash_value % self.size
+
+    def _hash2(self, item):
+        hash_value = 0
+        for char in reversed(str(item)):
+            hash_value = (hash_value * 31) + ord(char)
+        return hash_value % self.size
+
+    def _hash3(self, item):
+        hash_value = 7
+        for i, char in enumerate(str(item)):
+            hash_value = hash_value * 31 + (ord(char) << (i % 4))
+        return hash_value % self.size
+
+    def _hash4(self, item):
+        hash_value = 0
+        for char in str(item):
+            hash_value = (hash_value * 29) + ord(char)
+            hash_value ^= hash_value >> 3
+        return hash_value % self.size
 
     def _hash(self, item, seed):
-        """Generate a hash for the given item using a seed"""
-        hash_value = 0
-        for i, char in enumerate(item):
-            if i % 2 == 0:
-                hash_value = (hash_value * seed + ord(char)) % self.size
-            else:
-                hash_value = (hash_value ^ (ord(char) << seed % 10)) % self.size
-        return hash_value
+        if seed == 0:
+            return self._hash1(item)
+        elif seed == 1:
+            return self._hash2(item)
+        elif seed == 2:
+            return self._hash3(item)
+        elif seed == 3:
+            return self._hash4(item)
 
     def add(self, item):
-        for seed in self.seed:
+        for seed in range(self.hash_count):
             digest = self._hash(item, seed)
             self.bit_array[digest] = True
 
     def check(self, item):
-        for seed in self.seed:
-            digest = self._hash(item, seed)
-            if not self.bit_array[digest]:
-                return False
-        return True
+        return all(self.bit_array[self._hash(item, seed)] for seed in range(self.hash_count))
+
