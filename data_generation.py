@@ -1,3 +1,5 @@
+# data_generation.py: collection of functions to generate various types of data for testing the Bloom Filter.
+
 import random
 import string
 import nltk
@@ -15,7 +17,7 @@ def generate_numeric_data(count):
     return [random.randint(1, 10000) for _ in range(count)]
 
 def generate_natural_words(count):
-    word_list = words.words()  # This includes over 236,000 English words
+    word_list = words.words()  
     return random.sample(word_list, count)
 
 def generate_list_data(count):

@@ -1,3 +1,5 @@
+# bloom_filter.py: implementation of the Bloom Filter class.
+
 from bitarray import bitarray
 
 class BloomFilter:

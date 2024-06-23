@@ -1,4 +1,5 @@
-# benchmark.py
+# benchmark.py: functions to benchmarks the performance of the Bloom Filter using different datasets and sizes and to plot final results
+
 import time
 import matplotlib.pyplot as plt
 from bloom_filter import BloomFilter
@@ -19,7 +20,7 @@ def benchmark_bloom_filter(data_generator, num_samples, sizes, test_interval=100
     for size in sizes:
         bf = BloomFilter(size * 10, size)
         sample_data = data_generator(size)
-        test_data = data_generator(1000)  # Fixed number for check
+        test_data = data_generator(1000)  
 
         # Insert data
         insert_time, _ = time_function(lambda: [bf.add(item) for item in sample_data])
