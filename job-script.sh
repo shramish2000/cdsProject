@@ -7,5 +7,5 @@
 #SBATCH --mem=4GB
 
 module load python/3.8
-python3 run_bloom_filter_benchmark.py
+python3 benchmark.py
 
