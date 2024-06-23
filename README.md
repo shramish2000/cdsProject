@@ -91,6 +91,10 @@ These hash functions were chosen for their simplicity and efficiency in terms of
 
 ### 5. Time and Space Complexity
 
+- The expected time complexity for insert and check operations is O(k), where k is the number of hash functions.
+- The space complexity is O(m), where m is the size of the bit array.
+- These complexities are discussed in the `benchmark.py` script, which includes performance tests.
+
 ### 6. Performance Testing
 
 **Performance Evaluation:**
